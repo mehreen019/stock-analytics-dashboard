@@ -1,16 +1,11 @@
-
+import Dashboard from "./pages/dashboard"
 
 function App() {
 
   return (
-    <>
       <div>
-       
+        <Dashboard />
       </div>
-      <p>
-        Stock analytics dashboard
-      </p>
-    </>
   )
 }
 
