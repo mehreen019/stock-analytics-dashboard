@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import { Select } from '../components/ui/Select';
 import { Loader } from 'lucide-react';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = 'https://stock-analytics-dashboard-1.onrender.com/api';
 
 const Dashboard = () => {
   const [stockData, setStockData] = useState<StockData[]>([]);
