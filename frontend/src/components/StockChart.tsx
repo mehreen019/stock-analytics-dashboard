@@ -12,7 +12,7 @@ import {
   Filler,
   ArcElement,
 } from 'chart.js';
-import { Chart } from 'react-chartjs-2';
+import { Line, Pie } from 'react-chartjs-2';
 import type { ChartData } from '../types/stock';
 
 ChartJS.register(
@@ -25,7 +25,7 @@ ChartJS.register(
   Tooltip,
   Legend,
   Filler,
-  ArcElement
+  ArcElement,
 );
 
 interface ExtendedChartData extends ChartData {
@@ -106,9 +106,7 @@ export function StockChart({
     return priceDatasets[0];
   };
 
-
   const getFilteredData = () => {
-
     if (!data || !data.datasets || data.datasets.length === 0) {
       return {
         labels: [],
@@ -130,7 +128,8 @@ export function StockChart({
     };
   };
 
-  const generateLineChartConfig = () => {
+  // Line chart data configuration
+  const generateLineChartData = () => {
     const filteredData = getFilteredData();
     
     if (!filteredData.datasets || filteredData.datasets.length === 0) {
@@ -145,7 +144,6 @@ export function StockChart({
       datasets: filteredData.datasets.map((dataset, index) => {
         if (!dataset || !dataset.data) {
           return {
-            type: 'line' as const,
             label: 'No Data',
             data: [],
             borderColor: colorPalette.primary,
@@ -156,7 +154,6 @@ export function StockChart({
         
         if (index === 0 || !dataset.label || !dataset.label.toLowerCase().includes('volume')) {
           return {
-            type: 'line' as const,
             label: `${activePriceType.charAt(0).toUpperCase() + activePriceType.slice(1)} Price`,
             data: dataset.data,
             borderColor: colorPalette.primary,
@@ -171,8 +168,9 @@ export function StockChart({
             fill: false
           };
         } else {
+          // For the volume dataset, create a custom dataset for the Line component
           return {
-            type: 'bar' as const,
+            type: 'line' as const,
             label: dataset.label,
             data: dataset.data,
             backgroundColor: colorPalette.secondaryLight,
@@ -185,11 +183,10 @@ export function StockChart({
     };
   };
 
-
-  const generatePieChartConfig = () => {
+  // Pie chart data configuration
+  const generatePieChartData = () => {
     const filteredData = getFilteredData();
     
-
     const dataset = filteredData.datasets && filteredData.datasets.length > 0 
       ? filteredData.datasets[0] 
       : null;
@@ -221,11 +218,6 @@ export function StockChart({
       ]
     };
   };
-
-
-  const chartConfig = activeChartType === 'pie' 
-    ? generatePieChartConfig() 
-    : generateLineChartConfig();
 
   const lineChartOptions = {
     responsive: true,
@@ -338,7 +330,6 @@ export function StockChart({
     }
   };
 
-
   const pieChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -379,20 +370,14 @@ export function StockChart({
         color: '#333'
       },
     },
-    cutout: '50%',
     animation: {
-      animateScale: true,
-      animateRotate: true
+      duration: 500
     }
   };
-
 
   const handleChartTypeChange = (newType: ChartType) => {
     setActiveChartType(newType);
   };
-
-
-  const options = activeChartType === 'pie' ? pieChartOptions : lineChartOptions;
 
   const getTabStyle = (tabType: ChartType) => ({
     padding: '10px 20px',
@@ -405,7 +390,6 @@ export function StockChart({
     border: 'none',
     transition: 'all 0.3s ease'
   });
-
 
   const getPriceButtonStyle = (priceType: PriceType) => ({
     padding: '6px 12px',
@@ -472,12 +456,19 @@ export function StockChart({
       {/* Chart */}
       <div style={{ height: `${height}px` }} className="w-full">
         {data && (
-          <Chart 
-            key={`${activeChartType}-${activePriceType}`} 
-            type={activeChartType} 
-            options={options} 
-            data={chartConfig} 
-          />
+          activeChartType === 'line' ? (
+            <Line 
+              key={`line-${activePriceType}`} 
+              options={lineChartOptions} 
+              data={generateLineChartData()} 
+            />
+          ) : (
+            <Pie
+              key={`pie-${activePriceType}`}
+              options={pieChartOptions}
+              data={generatePieChartData()}
+            />
+          )
         )}
       </div>
     </div>
