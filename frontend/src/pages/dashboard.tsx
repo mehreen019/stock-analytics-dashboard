@@ -83,6 +83,21 @@ const Dashboard = () => {
     }
   };
 
+  const handleExport = () => {
+    const csvContent = [
+      Object.keys(stockData[0]).join(','),
+      ...stockData.map(item => Object.values(item).join(','))
+    ].join('\n');
+  
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${selectedCode}_data.csv`;
+    a.click();
+  };
+  
+
 
   const chartData = {
     labels: stockData.map(item => item.date),
@@ -144,6 +159,26 @@ const Dashboard = () => {
           <h2 className="text-xl font-semibold mb-4 text-gray-900">Historical Data</h2>
           <StockTable data={stockData} onEdit={handleEdit} />
         </div>
+
+        <button
+          style={{ 
+            marginLeft: '10px',
+            padding: '10px 20px',
+            backgroundColor: 'rgb(189, 195, 199)',
+            color: '#333',
+            cursor: 'pointer',
+            borderRadius: '4px 4px 4px 4px',
+            marginRight: '4px',
+            fontWeight: 'normal',
+            border: 'none',
+            transition: 'all 0.3s ease',
+            marginBottom: '10px',
+            marginTop: '10px',
+          }}
+          onClick={handleExport}
+        >
+          Export Data
+        </button>
       </div>
     </div>
   );
